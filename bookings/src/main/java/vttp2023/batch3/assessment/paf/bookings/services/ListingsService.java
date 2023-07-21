@@ -7,10 +7,13 @@ import org.bson.Document;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import vttp2023.batch3.assessment.paf.bookings.models.Search;
 import vttp2023.batch3.assessment.Utils;
 import vttp2023.batch3.assessment.paf.bookings.models.Accoms;
+import vttp2023.batch3.assessment.paf.bookings.models.Details;
+import vttp2023.batch3.assessment.paf.bookings.models.Booking;
 import vttp2023.batch3.assessment.paf.bookings.repositories.ListingsRepository;
 
 @Service
@@ -32,15 +35,25 @@ public class ListingsService {
 		return accomsListing;
 	}
 
+	public Details getAccomDetails(String accomId) {
+		Details deets = Utils.toDetailsObject(repo.getAccomsDetail(accomId));
+		return deets;
+	}
 
-	
-	//TODO: Task 3
+	@Transactional
+	public Integer createBooking(Booking booking) {
+		Integer vacancy = repo.getVacancy(booking.accId());
 
+		if ( booking.duration() <= vacancy) {
+			repo.updateVacancy(booking.accId(), booking.duration());
+		} else {
+			throw new IllegalArgumentException("Not enough vacancy!");
+		}
 
-	//TODO: Task 4
-	
-
-	//TODO: Task 5
+		Integer resvId = repo.createBooking(booking);
+		System.out.printf("From service: %d" , resvId);
+		return resvId;
+	}
 
 
 }

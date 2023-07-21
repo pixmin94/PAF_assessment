@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import vttp2023.batch3.assessment.paf.bookings.services.ListingsService;
 import vttp2023.batch3.assessment.paf.bookings.models.Search;
 import vttp2023.batch3.assessment.paf.bookings.models.Accoms;
+import vttp2023.batch3.assessment.paf.bookings.models.Booking;
+import vttp2023.batch3.assessment.paf.bookings.models.Details;
 
 @Controller
 @RequestMapping
@@ -46,15 +49,32 @@ public class ListingsController {
 		return mav;
 	}
 
-	@PostMapping(path="/booking")
-	public String getAccomDetails(@RequestBody String accomId, Model m) {
-		System.out.println(accomId);
-		m.addAttribute("message", accomId);
+	@GetMapping(path="/booking")
+	public ModelAndView getAccomDetails(@RequestParam String accomId) {
+		// System.out.println(accomId);
+		Details deets = service.getAccomDetails(accomId);
+
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("details");
+        mav.addObject("details", deets);
+        mav.setStatus(HttpStatusCode.valueOf(200));
 	
-		return "test";
+		return mav;
 	}
 
-	//TODO: Task 4
+	@PostMapping(path="/book")
+	public ModelAndView createBooking(@ModelAttribute Booking booking){
+		System.out.println("From controller: \n");
+		System.out.println(booking);
+		Integer resvId = service.createBooking(booking);
+
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("success");
+		mav.addObject("resvId", resvId);
+		mav.setStatus(HttpStatusCode.valueOf(200));
+		return mav;
+
+	} 
 	
 
 	//TODO: Task 5

@@ -1,5 +1,8 @@
 package vttp2023.batch3.assessment.paf.bookings.repositories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.bson.Document;
@@ -16,20 +19,33 @@ import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import vttp2023.batch3.assessment.paf.bookings.models.Search;
+import vttp2023.batch3.assessment.paf.bookings.models.Booking;
 
 @Repository
 public class ListingsRepository {
 	public static final String F_COUNTRY = "address.country";
 	public static final String C_LISTINGS = "listings";
 
+	public static final String check_vacancy_SQL = "select vacancy from acc_occupancy where acc_id = ?";
+	public static final String update_vacancy_SQL = "update acc_occupancy set vacancy = vacancy - ? where acc_id = ?";
+	public static final String create_booking_SQL = "insert into reservations (cust_name, email, acc_id, arrival_date, duration) values (?,?,?,?,?)";
+
+
 	@Autowired
-	private MongoTemplate template;
+	private MongoTemplate mgtemplate;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	// db.listings.distinct("address.country")
 	public List<String> getAllCountries() {
-		List<String> countries = template.findDistinct(new Query(), F_COUNTRY, C_LISTINGS, String.class);
+		List<String> countries = mgtemplate.findDistinct(new Query(), F_COUNTRY, C_LISTINGS, String.class);
 
 		return countries;
 	}
@@ -61,16 +77,68 @@ public class ListingsRepository {
 
 		Aggregation pipeline = Aggregation.newAggregation(match, sort, project);
 
-		AggregationResults<Document> result = template.aggregate(pipeline, C_LISTINGS, Document.class);
+		AggregationResults<Document> result = mgtemplate.aggregate(pipeline, C_LISTINGS, Document.class);
 		
 		return result.getMappedResults();
 	}
 
+	/* db.listings.aggregate(
+		{ $match: { _id: "16231922" } },
+		{ $project: { description: 1, "address.street": 1, "address.country": 1, 
+			"address.suburb": 1, "images.picture_url": 1, price: 1, amenities: 1}}
+	) */
+	public Document getAccomsDetail(String accomId) {
+		MatchOperation match = Aggregation.match(Criteria.where("_id").is(accomId));
+		ProjectionOperation project = Aggregation.project(
+			"description", "address.street", "address.suburb", 
+			"address.country", "images.picture_url", "price", "amenities");
+		Aggregation pipeline = Aggregation.newAggregation(match, project);
 
-	//TODO: Task 4
+		AggregationResults<Document> result = mgtemplate.aggregate(pipeline, C_LISTINGS, Document.class);
+
+		return result.getUniqueMappedResult();
+	}
 	
 
-	//TODO: Task 5
+	public Integer getVacancy(Integer accomsId) {
+		return (Integer) jdbcTemplate.queryForObject(check_vacancy_SQL, Integer.class, accomsId);
+	}
+
+	public Integer updateVacancy(Integer accomsId, Integer stay) {
+		int iUpdated = 0;
+
+        iUpdated = jdbcTemplate.update(update_vacancy_SQL, stay, accomsId);
+
+		return iUpdated;
+	}
+
+	public Integer createBooking(Booking booking) {
+        KeyHolder generatedKey = new GeneratedKeyHolder();
+
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+
+                PreparedStatement ps = con.prepareStatement(create_booking_SQL, new String[] { "id" });
+                // (resv_id, cust_name, email, acc_id, arrival_date, duration)
+				ps.setString(1, booking.custName());
+				ps.setString(2, booking.email());
+				ps.setInt(3, booking.accId());
+				ps.setDate(4, booking.arrival());
+				ps.setInt(5, booking.duration());
+                
+                return ps;
+            }
+
+        };
+
+        jdbcTemplate.update(psc, generatedKey);
+
+        Integer createdBookingId = generatedKey.getKey().intValue();
+        return createdBookingId;
+    }
+
 
 
 }

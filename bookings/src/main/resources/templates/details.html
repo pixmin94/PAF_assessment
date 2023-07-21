@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <a href="/search">Back</a>
+    <table data-th-object="${details}" style="border: 1px solid black;">
+        <tr>
+            <td>Id:</td>
+            <td><span data-th-text="${details.id}"></span></td>
+        </tr>
+        <tr>
+            <td>Description:</td>
+            <td>
+                <span data-th-text="${details.description}"></span>
+                <img data-th-src="${details.image}" width="150">
+            </td>
+        </tr>
+        <tr>
+            <td>Address:</td>
+            <td>
+                <span data-th-text="${details.street}"></span><br>
+                <span data-th-text="${details.suburb}"></span><br>
+                <span data-th-text="${details.country}"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>Price:</td>
+            <td><span data-th-text="${details.price}"></span></td>
+        </tr>
+        <tr>
+            <td>Amenities:</td>
+            <td><span data-th-text="${details.amenities}"></span></td>
+        </tr>
+    </table>
+
+    <h2>Booking Details</h2>
+    <form method="POST" action="/book">
+        <!-- (resv_id, cust_name, email, acc_id, arrival_date, duration) -->
+        <input type="hidden" name="accId" data-th-value="${details.id}">
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" name="custName"></td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td><input type="email" name="email"></td>
+            </tr>
+            <tr>
+                <td>Arrival:</td>
+                <td><input type="date" name="arrival"></td>
+            </tr>
+            <tr>
+                <td>Stay:</td>
+                <td><input type="number" name="duration"> days</td>
+            </tr>
+            <tr>
+                <td><button type="submit">Book</button></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

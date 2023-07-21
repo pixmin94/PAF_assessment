@@ -7,22 +7,31 @@
 </head>
 <body>
     <h1>Search Our Accomodations</h1>
-    <form method="GET" action="/search">
+    <form method="POST" action="/search">
         <table>
             <tr>
                 <td>Country:</td>
-                <td><select name="country" id="country" >
-                    <option data-th-each="c : ${countries}" data-th-text="${c}"></option>
-                </select></td>
+                <td>
+                    <select name="country" id="country" >
+                        <option data-th-each="c : ${countries}" data-th-text="${c}"></option>
+                    </select>
+                    <!-- <span data-th-if="${#fields.hasErrors('country')}" data-th-errors="*{country}"></span> -->
+                </td>
             </tr>
             <tr>
                 <td>Number of person:</td>
-                <td><input type="number" name="pax"></td>
+                <td>
+                    <input type="number" name="pax">
+                    <!-- <span data-th-if="${#fields.hasErrors('pax')}" data-th-errors="*{pax}"></span> -->
+                </td>
             </tr>
             <tr>
                 <td>Price range:</td>
-                <td>Min: <input type="text" name="min"><br>
+                <td>Min: <input type="text" name="min">
+                    <!-- <span data-th-if="${#fields.hasErrors('min')}" data-th-errors="*{min}"></span> -->
+                    <br>
                     Max: <input type="text" name="max">
+                    <!-- <span data-th-if="${#fields.hasErrors('max')}" data-th-errors="*{max}"></span> -->
                 </td>
             </tr>
             <tr>

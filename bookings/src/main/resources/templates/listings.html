@@ -20,7 +20,7 @@
             <td><span data-th-text="${accom.price}"></span></td>
             <td><img data-th-src="${accom.image}" width="150"></td>
             <td>
-                <form method="POST" action="/booking">
+                <form method="GET" action="/booking">
                     <button type="submit" name="accomId" data-th-value="${accom.id}">Details</button>
                 </form>
             </td>
