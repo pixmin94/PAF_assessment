@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Listing</title>
+</head>
+<body>
+    <h1>Listings for <span data-th-text="${country}"></span></h1>
+    <a href="/">Back</a>
+
+    <table data-th-object="${accoms}" style="border: 1px solid black;">
+        <tr style="border: 1px solid black;">
+            <td>Name</td>
+            <td>Price</td>
+            <td>Image</td>
+        </tr>
+        <tr data-th-each="accom : ${accoms}" style="border: 1px solid black;">
+            <td><span data-th-text="${accom.street}"></span></td>
+            <td><span data-th-text="${accom.price}"></span></td>
+            <td><img data-th-src="${accom.image}" width="150"></td>
+            <td>
+                <form method="POST" action="/booking">
+                    <button type="submit" name="accomId" data-th-value="${accom.id}">Details</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

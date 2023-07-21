@@ -56,8 +56,8 @@ public class ListingsRepository {
 		SortOperation sort = Aggregation.sort(Sort.by(Direction.DESC, "price"));
 
 		ProjectionOperation project = Aggregation.project(
-			"name", "images.picture_url", "price")
-			.andExclude("_id");
+			"address.street", "images.picture_url", "price")
+			;
 
 		Aggregation pipeline = Aggregation.newAggregation(match, sort, project);
 
