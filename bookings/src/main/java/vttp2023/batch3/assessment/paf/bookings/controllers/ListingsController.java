@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpSession;
 import vttp2023.batch3.assessment.paf.bookings.services.ListingsService;
 import vttp2023.batch3.assessment.paf.bookings.models.Search;
 import vttp2023.batch3.assessment.paf.bookings.models.Accoms;
@@ -35,10 +36,11 @@ public class ListingsController {
 	}
 	
 	@PostMapping(path="/search")
-	public ModelAndView getSearchListing(@ModelAttribute Search search) {
+	public ModelAndView getSearchListing(@ModelAttribute Search search, HttpSession session) {
 		// System.out.println(search);
 		List<Accoms> listing = service.getSearchListings(search);
 		System.out.println(listing.get(0));
+		session.setAttribute("listings", listing);
 
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("listings");
@@ -74,10 +76,7 @@ public class ListingsController {
 		mav.setStatus(HttpStatusCode.valueOf(200));
 		return mav;
 
-	} 
-	
-
-	//TODO: Task 5
+	}
 
 
 }
