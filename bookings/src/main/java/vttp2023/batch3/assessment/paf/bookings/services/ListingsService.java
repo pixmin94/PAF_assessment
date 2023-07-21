@@ -1,9 +1,23 @@
 package vttp2023.batch3.assessment.paf.bookings.services;
 
-public class ListingsService {
-	
-	//TODO: Task 2
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import vttp2023.batch3.assessment.paf.bookings.repositories.ListingsRepository;
+
+@Service
+public class ListingsService {
+	@Autowired
+	private ListingsRepository repo;
+	
+	public List<String> getAllCountries() {
+		List<String> countries = repo.getAllCountries();
+		return countries;
+	}
+
+	
 	
 	//TODO: Task 3
 
